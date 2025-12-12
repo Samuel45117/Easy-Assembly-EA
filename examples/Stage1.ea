@@ -1,0 +1,29 @@
+; Stage1.ea - Bootloader (org 0x7C00)
+ORG BOIS
+
+LENDER "Loading HubbleOS..."
+BR
+
+; salva DL
+ASM {
+    push cs
+    pop ds
+    mov [boot_drive], dl
+}
+
+; restaura DL antes do loader
+ASM {
+    push cs
+    pop ds
+    mov dl, [boot_drive]
+}
+
+STAGE2_SECTORS 5    ; ajuste se necessário
+
+; === variáveis DEVEM vir antes do FB ===
+ASM {
+boot_drive: db 0
+}
+
+; Boot signature filler (must be last!)
+FB

@@ -1,0 +1,69 @@
+; Stage2.ea - Shell carregado em 0x0000:0x8000 (org 0x8000)
+ORG 0x8000
+
+; === DEBUG: Mostra que Stage2 foi carregado ===
+ASM {
+    push cs
+    pop ds
+    mov si, debug_msg
+    mov ah, 0x0E
+debug_loop:
+    lodsb
+    test al, al
+    jz debug_done
+    int 0x10
+    jmp debug_loop
+debug_done:
+    jmp start_shell
+debug_msg: db 'Stage2 loaded!', 0x0D, 0x0A, 0
+}
+
+start_shell:
+LENDER "HubbleOS Boot Manager"
+BR
+LENDER "Type 'help' for commands"
+BR
+
+LOOP main_loop
+LENDER "Hubbsh> "
+ENTERED commands
+
+IF commands = "help"
+    LENDER "Available commands:"
+    BR
+    LENDER "  help   - Show this help"
+    BR
+    LENDER "  clear  - Clear screen"
+    BR
+    LENDER "  dir    - List files"
+    BR
+    LENDER "  about  - About HubbleOS"
+    BR
+.
+
+IF commands = "clear"
+    ASM {
+        ; função simples de limpar: modo texto 3 (default) - apenas exemplo
+        mov ah, 0x00
+        mov al, 0x03
+        int 0x10
+    }
+    LENDER "HubbleOS Boot Manager"
+    BR
+.
+
+IF commands = "dir"
+    LENDER "Directory listing:"
+    BR
+    LENDER "  No files found"
+    BR
+.
+
+IF commands = "about"
+    LENDER "HubbleOS v0.1"
+    BR
+    LENDER "A simple bootable OS"
+    BR
+.
+
+JMP main_loop
